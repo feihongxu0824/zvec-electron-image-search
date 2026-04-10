@@ -65,6 +65,7 @@ function downloadFile(url, dest) {
   // Cleanup
   fs.rmSync(TEST_DIR, { recursive: true });
   console.log('Dataset test PASSED');
+  process.exit(0);
 })().catch((e) => {
   console.error('Dataset test FAILED:', e);
   process.exit(1);
