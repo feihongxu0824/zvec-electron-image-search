@@ -76,3 +76,11 @@ jobs:
             fs.rmSync(dir, { recursive: true });
             console.log('zvec index create & search OK');
           "
+
+      - name: Verify CLIP model & embeddings
+        shell: bash
+        run: node test/test-clip.js
+
+      - name: Verify dataset download
+        shell: bash
+        run: node test/test-dataset.js
