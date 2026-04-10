@@ -1,0 +1,81 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Verify native modules load
+        shell: bash
+        run: |
+          node -e "
+            const zvec = require('@zvec/zvec');
+            console.log('zvec loaded successfully');
+            const ort = require('onnxruntime-node');
+            console.log('onnxruntime-node loaded successfully');
+            const { CLIPTextModelWithProjection } = require('@huggingface/transformers');
+            console.log('transformers loaded successfully');
+            console.log('All native modules OK');
+          "
+
+      - name: Verify zvec index create & search
+        shell: bash
+        run: |
+          node -e "
+            const os = require('os');
+            const path = require('path');
+            const fs = require('fs');
+            const zvec = require('@zvec/zvec');
+
+            const dir = path.join(os.tmpdir(), 'zvec-ci-test');
+            if (fs.existsSync(dir)) fs.rmSync(dir, { recursive: true });
+
+            zvec.ZVecInitialize({});
+            const schema = new zvec.ZVecCollectionSchema({
+              name: 'test',
+              vectors: [{
+                name: 'v',
+                dataType: zvec.ZVecDataType.VECTOR_FP32,
+                dimension: 4,
+                indexParams: {
+                  indexType: zvec.ZVecIndexType.FLAT,
+                  metricType: zvec.ZVecMetricType.COSINE,
+                },
+              }],
+            });
+
+            const col = zvec.ZVecCreateAndOpen(dir, schema);
+            col.insertSync([{ id: 'doc1', vectors: { v: new Float32Array([1,0,0,0]) } }]);
+            col.optimizeSync();
+            const results = col.querySync({ fieldName: 'v', vector: new Float32Array([1,0,0,0]), topk: 1 });
+            console.log('Search result:', JSON.stringify(results));
+            if (results.length !== 1 || results[0].id !== 'doc1') {
+              throw new Error('Unexpected search result');
+            }
+            col.closeSync();
+            fs.rmSync(dir, { recursive: true });
+            console.log('zvec index create & search OK');
+          "

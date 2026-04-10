@@ -1,0 +1,19 @@
+{
+  "name": "zvec-electron-image-search",
+  "version": "1.0.0",
+  "description": "Local multimodal image search powered by zvec and CLIP",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "dependencies": {
+    "@huggingface/transformers": "^3.0.0",
+    "@zvec/zvec": "^0.3.0",
+    "onnxruntime-node": "^1.20.0"
+  },
+  "devDependencies": {
+    "electron": "^33.4.11",
+    "electron-builder": "^25.0.0"
+  }
+}

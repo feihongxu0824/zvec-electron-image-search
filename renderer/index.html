@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' local-image:; style-src 'self' 'unsafe-inline'; script-src 'self';">
+  <title>zvec Image Search</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Setup Screen -->
+  <div id="setup-screen" class="screen">
+    <div class="setup-container">
+      <div class="logo">
+        <span class="logo-text">zvec</span>
+        <span class="logo-x">&times;</span>
+        <span class="logo-text">electron</span>
+      </div>
+      <p class="setup-subtitle">Local Multimodal Image Search</p>
+
+      <div id="setup-idle" class="setup-section">
+        <p class="setup-desc">
+          First-time setup: download the CLIP model and a sample image dataset,
+          then build the vector search index. This takes a few minutes.
+        </p>
+        <button id="btn-setup" class="btn-primary">Start Setup</button>
+      </div>
+
+      <div id="setup-running" class="setup-section" style="display:none;">
+        <div class="progress-stages">
+          <div class="stage" id="stage-model">
+            <div class="stage-header">
+              <span class="stage-icon">&#9679;</span>
+              <span class="stage-label">CLIP Model</span>
+              <span class="stage-pct" id="pct-model">0%</span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" id="bar-model"></div></div>
+          </div>
+          <div class="stage" id="stage-images">
+            <div class="stage-header">
+              <span class="stage-icon">&#9679;</span>
+              <span class="stage-label">Image Dataset</span>
+              <span class="stage-pct" id="pct-images">0%</span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" id="bar-images"></div></div>
+          </div>
+          <div class="stage" id="stage-index">
+            <div class="stage-header">
+              <span class="stage-icon">&#9679;</span>
+              <span class="stage-label">Search Index</span>
+              <span class="stage-pct" id="pct-index">0%</span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" id="bar-index"></div></div>
+          </div>
+        </div>
+        <p class="setup-status" id="setup-status">Preparing...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search Screen -->
+  <div id="search-screen" class="screen" style="display:none;">
+    <div class="search-header">
+      <div class="search-bar-container">
+        <div class="search-brand">zvec</div>
+        <div class="search-input-wrap">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="M21 21l-4.35-4.35"></path>
+          </svg>
+          <input type="text" id="search-input" placeholder="Describe an image... e.g. sunset over the ocean" autocomplete="off">
+          <div class="search-spinner" id="search-spinner" style="display:none;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="results-area" id="results-area">
+      <div class="empty-state" id="empty-state">
+        <p class="empty-title">Search images by description</p>
+        <div class="suggestions">
+          <button class="suggestion" data-query="a dog playing in the park">a dog in the park</button>
+          <button class="suggestion" data-query="mountain landscape with snow">snowy mountain</button>
+          <button class="suggestion" data-query="coffee cup on a wooden table">coffee on table</button>
+          <button class="suggestion" data-query="sunset over the ocean">ocean sunset</button>
+          <button class="suggestion" data-query="city skyline at night">city at night</button>
+          <button class="suggestion" data-query="green forest with sunlight">forest sunlight</button>
+        </div>
+      </div>
+
+      <div class="results-grid" id="results-grid" style="display:none;"></div>
+    </div>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox" style="display:none;">
+      <div class="lightbox-backdrop"></div>
+      <div class="lightbox-content">
+        <img id="lightbox-img" src="" alt="">
+        <div class="lightbox-info">
+          <span id="lightbox-score"></span>
+        </div>
+        <div class="lightbox-actions">
+          <button class="lightbox-btn" id="btn-copy-image">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Image
+          </button>
+        </div>
+        <button class="lightbox-close">&times;</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
