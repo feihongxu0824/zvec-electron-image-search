@@ -34,8 +34,6 @@ jobs:
           node -e "
             const zvec = require('@zvec/zvec');
             console.log('zvec loaded successfully');
-            const ort = require('onnxruntime-node');
-            console.log('onnxruntime-node loaded successfully');
             const { CLIPTextModelWithProjection } = require('@huggingface/transformers');
             console.log('transformers loaded successfully');
             console.log('All native modules OK');
@@ -45,12 +43,11 @@ jobs:
         shell: bash
         run: |
           node -e "
-            const os = require('os');
             const path = require('path');
             const fs = require('fs');
             const zvec = require('@zvec/zvec');
 
-            const dir = path.join(os.tmpdir(), 'zvec-ci-test');
+            const dir = path.join(process.cwd(), '.zvec-ci-test');
             if (fs.existsSync(dir)) fs.rmSync(dir, { recursive: true });
 
             zvec.ZVecInitialize({});
