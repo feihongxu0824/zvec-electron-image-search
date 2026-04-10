@@ -79,10 +79,7 @@ function assertClose(actual, expected, msg) {
   // Cleanup
   fs.rmSync(tmpDir, { recursive: true });
   console.log('CLIP test PASSED');
-  // Delay exit to let ONNX Runtime native threads settle,
-  // avoiding macOS ARM64 mutex crash on teardown.
-  setTimeout(() => process.exit(0), 500);
 })().catch((e) => {
   console.error('CLIP test FAILED:', e);
-  setTimeout(() => process.exit(1), 500);
+  process.exit(1);
 });

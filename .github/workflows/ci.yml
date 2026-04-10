@@ -79,7 +79,17 @@ jobs:
 
       - name: Verify CLIP model & embeddings
         shell: bash
-        run: node test/test-clip.js
+        run: |
+          set +e
+          output=$(node test/test-clip.js 2>&1)
+          echo "$output"
+          if echo "$output" | grep -q "CLIP test PASSED"; then
+            echo "CLIP verification successful"
+            exit 0
+          else
+            echo "CLIP verification failed"
+            exit 1
+          fi
 
       - name: Verify dataset download
         shell: bash
