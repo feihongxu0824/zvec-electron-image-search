@@ -79,6 +79,7 @@ function assertClose(actual, expected, msg) {
   // Cleanup
   fs.rmSync(tmpDir, { recursive: true });
   console.log('CLIP test PASSED');
+  process.exit(0);
 })().catch((e) => {
   console.error('CLIP test FAILED:', e);
   process.exit(1);
