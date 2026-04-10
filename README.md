@@ -1,49 +1,67 @@
-# zvec-image-search
+# zvec-electron-image-search
 
-基于 [zvec](https://www.npmjs.com/package/@zvec/zvec) + [CLIP](https://huggingface.co/Xenova/clip-vit-base-patch32) 的本地多模态图片语义搜索桌面应用。输入自然语言，即可从本地图片库中找到语义匹配的图片。
+A local multimodal image search desktop app powered by [zvec](https://www.npmjs.com/package/@zvec/zvec) and [CLIP](https://huggingface.co/Xenova/clip-vit-base-patch32). Type natural language queries and instantly find semantically matching images from your local library — all running offline on your machine.
 
-## 前置要求
+[![CI](https://github.com/feihongxu0824/zvec-electron-image-search/actions/workflows/ci.yml/badge.svg)](https://github.com/feihongxu0824/zvec-electron-image-search/actions/workflows/ci.yml)
 
-| 依赖 | 版本要求 |
-|------|---------|
-| Node.js | >= 18 |
-| npm | >= 8 |
+![Screenshot — searching "coffee cup on a wooden table" on macOS](resources/image.png)
 
-> **Windows / macOS / Linux** 均可运行。
+## Features
 
-## 本地运行
+- **Natural language image search** — describe what you're looking for in plain English
+- **Fully local** — CLIP inference and vector search run entirely on your machine, no cloud API needed
+- **Cross-platform** — works on Windows, macOS, and Linux
+- **Cosine similarity scores** — each result shows how closely it matches your query
+- **Copy to clipboard** — click to copy any result image directly
+- **Lightbox preview** — click any image for a full-size view
+
+## Prerequisites
+
+| Dependency | Version |
+|------------|---------|
+| Node.js    | >= 18   |
+| npm        | >= 8    |
+
+## Quick Start
 
 ```bash
-# 1. 进入项目目录
-cd zvec-image-search
+# Clone the repo
+git clone https://github.com/feihongxu0824/zvec-electron-image-search.git
+cd zvec-electron-image-search
 
-# 2. 安装依赖
+# Install dependencies
 npm install
 
-# 3. 如果无法直接访问 HuggingFace，设置镜像源
+# (Optional) If HuggingFace is not accessible, use a mirror
 export HF_ENDPOINT=https://hf-mirror.com
 
-# 4. 启动应用
+# Launch the app
 npm start
 ```
 
-## 首次启动
+## First Launch
 
-首次启动时，应用会自动完成以下三个阶段的初始化（需要联网）：
+On the first run, the app automatically completes three setup stages (requires internet):
 
-1. **下载 CLIP 模型** — 从 HuggingFace 下载量化后的 `clip-vit-base-patch32` 模型（约 150 MB）
-2. **下载示例图片** — 从 [Lorem Picsum](https://picsum.photos) 下载 200 张示例图片
-3. **构建向量索引** — 对每张图片提取 512 维特征向量，使用 zvec 构建本地索引
+1. **Download CLIP model** — fetches the quantized `clip-vit-base-patch32` model from HuggingFace (~150 MB)
+2. **Download sample images** — downloads 200 sample images from [Lorem Picsum](https://picsum.photos)
+3. **Build vector index** — extracts a 512-dim feature vector for each image using CLIP and indexes them with zvec
 
-整个过程可能需要几分钟，界面上会显示进度。完成后数据会缓存在本地，后续启动无需重复下载。
+This may take a few minutes. A progress indicator is shown in the UI. Once complete, all data is cached locally at `~/.zvec-image-search` — subsequent launches skip the download.
 
-## 使用方式
+## Usage
 
-初始化完成后，在搜索框中输入**英文**关键词或短语（例如 `sunset over the ocean`、`a cat sitting on a chair`），应用会通过 CLIP 模型将文本转为向量，然后在 zvec 索引中进行语义检索，返回最相关的 20 张图片。
+After setup, type an English phrase in the search bar (e.g. `coffee cup on a wooden table`, `sunset over the ocean`, `a cat sitting on a chair`). The app converts your text into a CLIP embedding, performs a cosine similarity search against the zvec index, and returns the top 20 matching images ranked by relevance score.
 
-## 技术栈
+## Tech Stack
 
-- **Electron** — 跨平台桌面应用框架
-- **@huggingface/transformers** — 在 Node.js 端运行 CLIP 模型
-- **onnxruntime-node** — ONNX 模型推理引擎
-- **@zvec/zvec** — 轻量级向量数据库，用于存储和检索图片特征向量
+| Component | Role |
+|-----------|------|
+| [Electron](https://www.electronjs.org/) | Cross-platform desktop shell |
+| [@huggingface/transformers](https://www.npmjs.com/package/@huggingface/transformers) | CLIP model inference in Node.js |
+| [onnxruntime-node](https://www.npmjs.com/package/onnxruntime-node) | ONNX model runtime engine |
+| [@zvec/zvec](https://www.npmjs.com/package/@zvec/zvec) | Lightweight vector database for storing and searching image embeddings |
+
+## License
+
+MIT
