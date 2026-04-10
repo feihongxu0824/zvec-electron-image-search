@@ -79,10 +79,10 @@ function assertClose(actual, expected, msg) {
   // Cleanup
   fs.rmSync(tmpDir, { recursive: true });
   console.log('CLIP test PASSED');
-  // Use process._exit to avoid ONNX Runtime native thread cleanup crash on macOS ARM64
-  // (libc++abi: mutex lock failed: Invalid argument)
-  process._exit(0);
+  // Delay exit to let ONNX Runtime native threads settle,
+  // avoiding macOS ARM64 mutex crash on teardown.
+  setTimeout(() => process.exit(0), 500);
 })().catch((e) => {
   console.error('CLIP test FAILED:', e);
-  process._exit(1);
+  setTimeout(() => process.exit(1), 500);
 });
